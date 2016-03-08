@@ -1,0 +1,63 @@
+# DSI Shiny Server Guide
+
+## Installing and Configuring the Server
+
+0. Logging into AWS EC2 instance:
+    ```{sh, eval=FALSE}
+   ssh -i /path/to/key/dsi.pem root@public-ip
+    ```
+1. Fresh CentOS install. (VirutalBox image obtained from: http://virtualboxes.org/images/centos/)
+2. Install 'wget':
+    ```{sh, eval=FALSE}
+    sudo yum install wget
+    ```
+
+3. Install R from Fedora Extra Packages for Enterprise Linux (EPEL) repository:
+    ```{sh, eval=FALSE}
+    sudo yum install -y epel-release
+    sudo yum update -y
+    sudo yum install R
+    ```
+
+4. Install Shiny package:
+    1. Manually start R as root and install shiny package from R:
+    ```{sh, eval=FALSE}
+    install.packages('shiny', repos='https://cran.rstudio.com/')
+    ```
+
+4. Install RStudio Shiny Server:
+   Need to get the shiny-server install file on the EC2 instance, then install
+   with yum or rpm.  (1) may fail due to SSL issues, in which case follow (2)
+   to copy file from local machine.
+   
+    1. 
+    ```{sh, eval=FALSE}
+       sudo yum install --nogpgcheck shiny-server-1.4.1.759-rh5-x86_64.rpm
+       wget https://download3.rstudio.org/centos5.9/x86_64/shiny-server-1.4.1.759-rh5-x86_64.rpm
+       sudo yum install --nogpgcheck shiny-server-1.4.1.759-rh5-x86_64.rpm
+    ```
+
+    2.
+       From local machine:
+    ```{sh, eval=FALSE}
+           scp -i /path/my-key-pair.pem shiny-server-1.4.1.759-rh5-x86_64.rpm root@<public ip>:/destination/path
+    ```
+       Logged into instance:
+    ```{sh, eval=FALSE}
+           rpm -Uhv /path/to/shiny-server-rpm-file.rpm
+    ```
+
+5. Install additional needed R packages: shinythemes, RCurl, ggplot2, etc.
+
+6. Configure ssh-server: http://www.cyberciti.biz/faq/centos-ssh/
+
+
+# Uploading with ftp using vsftpd
+
+1. ftp *public-ip*
+2. login: shiny, pw: anteater
+3. mkdir *app-name*
+4. cd *app-name*
+5. lcd /path/to/app
+6. mput server.R ui.R
+   1. y for both following prompts
